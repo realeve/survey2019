@@ -60,6 +60,10 @@ body {
     font-weight: 100;
 }
 
+.paper .item {
+    margin-top: 30px;
+}
+
 .paper h3 {
     margin-top: 30px;
     text-align: center;
@@ -104,4 +108,9 @@ input[type="checkbox"i] {
 
 .action .btn {
     width: 120px;
+}
+
+.paper .hasErr {
+    color: #ee6677;
+    display: none;
 }

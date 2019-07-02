@@ -57,16 +57,17 @@ var renderLib = (function() {
     </label>';
     }
     var html =
-      '<div class="item row">\
+      '<div class="item row"  data-idx="' +
+      idx +
+      '"  >\
       <div class="col-md-12">\
           <h4 class="title">' +
       (idx + 1) +
       '.' +
       handleTitle(data.title) +
       '</h4>\
-          <div class="options"  data-idx="' +
-      idx +
-      '"  >\
+      <p class="hasErr">答案数量超过最多选择数，系统将不允许提交。</p>\
+      <div class="options">\
               <div class="checkbox">' +
       optionHtml +
       '</div>' +
@@ -94,16 +95,16 @@ var renderLib = (function() {
     </label>';
     }
     var html =
-      '<div class="item row">\
+      '<div class="item row"  data-idx="' +
+      idx +
+      '"  >\
       <div class="col-md-12">\
           <h4 class="title">' +
       (idx + 1) +
       '.' +
       handleTitle(data.title) +
       '</h4>\
-          <div class="options"  data-idx="' +
-      idx +
-      '"  >\
+          <div class="options">\
               <div class="radio">' +
       optionHtml +
       '</div>' +
@@ -164,18 +165,28 @@ var renderLib = (function() {
     return html;
   }
 
-  function validate(el) {
-    let answerId = el.name.replace(/\D/g, '');
+  function validate(answerId) {
     let question = paper[answerId];
-    console.log(question);
+    var answer = getAnswer(answerId);
+    if (question.length) {
+      var $errDom = $('.item[data-idx=' + answerId + ']').find('.hasErr');
+
+      if (answer.answer.split('、').length > question.length) {
+        console.log('超过');
+        $errDom.show();
+      } else {
+        console.log('正常');
+        $errDom.hide();
+      }
+    }
   }
 
   function bindEvent() {
     $('[data-idx] input').each(function(i, el) {
       $(el).change(function(e) {
         let target = e.target;
-        console.log(target, target.type, target.checked);
-        validate(e.target);
+        let answerId = target.name.replace(/\D/g, '');
+        validate(answerId);
       });
     });
   }
