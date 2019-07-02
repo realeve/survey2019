@@ -1,4 +1,4 @@
-var renderLib = (function () {
+var renderLib = (function() {
   var alphaList = [
     'A',
     'B',
@@ -28,6 +28,18 @@ var renderLib = (function () {
     'Z'
   ];
 
+  function handleTitle(title) {
+    var res = title.match(/最多选\d项/);
+    if (res == null) {
+      return title;
+    }
+    var replaceStr = res[0];
+    return title.replace(
+      replaceStr,
+      '<span style="color:#ee6677;">' + replaceStr + '</span>'
+    );
+  }
+
   function getCheckbox(data, idx) {
     var optionHtml = '';
     for (var i = 0; i < data.data.length; i++) {
@@ -50,12 +62,12 @@ var renderLib = (function () {
           <h4 class="title">' +
       (idx + 1) +
       '.' +
-      data.title +
+      handleTitle(data.title) +
       '</h4>\
-          <div class="options">\
-              <div class="checkbox" data-idx="' +
+          <div class="options"  data-idx="' +
       idx +
-      '">' +
+      '"  >\
+              <div class="checkbox">' +
       optionHtml +
       '</div>' +
       getExtraTextArea(data, idx) +
@@ -87,11 +99,11 @@ var renderLib = (function () {
           <h4 class="title">' +
       (idx + 1) +
       '.' +
-      data.title +
+      handleTitle(data.title) +
       '</h4>\
-          <div class="options" data-idx="' +
+          <div class="options"  data-idx="' +
       idx +
-      '">\
+      '"  >\
               <div class="radio">' +
       optionHtml +
       '</div>' +
@@ -107,12 +119,9 @@ var renderLib = (function () {
       return '';
     }
     return (
-      '<textarea  data-idx="' +
+      '<textarea class="form-control" placeholder="选择其他时，请在此填写详情" name="textarea' +
       idx +
-      '" class="form-control" placeholder="选择其他时，请在此填写详情" name="textarea' +
-      idx +
-      '" rows="5">\
-           </textarea>'
+      '" rows="5"></textarea>'
     );
   }
 
@@ -126,12 +135,9 @@ var renderLib = (function () {
       data.title +
       '</h4>\
         <div class="options">\
-            <textarea  data-idx="' +
+            <textarea class="form-control" placeholder="点击这里填写答案" name="textarea' +
       idx +
-      '" class="form-control" placeholder="点击这里填写答案" name="textarea' +
-      idx +
-      '" rows="5">\
-            </textarea>\
+      '" rows="5"></textarea>\
         </div>\
     </div>\
 </div>'
@@ -194,9 +200,9 @@ var renderLib = (function () {
     $('[data-idx] input').each(function (i, el) {
       $(el).change(function (e) {
         let target = e.target;
-        console.log(target, target.type, target.checked);
+        // console.log(target, target.type, target.checked);
         validate(e.target);
-      })
+      });
     });
   }
 
@@ -221,7 +227,7 @@ var renderLib = (function () {
         break;
       case 'checkbox':
         var arr = [];
-        $('[name="checkbox' + idx + '"]:checked').each(function (i, item) {
+        $('[name="checkbox' + idx + '"]:checked').each(function(i, item) {
           arr[i] = $(item).val();
         });
         answer = arr.join('、');
@@ -260,8 +266,8 @@ var renderLib = (function () {
 
     for (var i = 0; i < paperLen; i++) {
       var res = renderLib.getAnswer(i);
-      params['remark_' + i] = res.answer;
-      remark['remark_' + i] = res.remark;
+      params['remark_' + (i + 1)] = res.answer;
+      remark['remark_' + (i + 1)] = res.remark;
     }
     return { params: params, remark: remark };
   };
@@ -277,7 +283,7 @@ var renderLib = (function () {
   };
 })();
 
-$(function () {
+$(function() {
   var url = 'http://api.cbpc.ltd/';
   var ip = '';
 
