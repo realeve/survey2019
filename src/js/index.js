@@ -218,8 +218,11 @@ $(function() {
   var html = renderLib.initHtml();
   $('#paper-wrap').html(html);
 
-  var answer = {};
-  for (var i = 0; i < paperLen; i++) {
-    answer['remark_' + i] = renderLib.getAnswer(i);
-  }
+  $('#submit').on('click', function() {
+    var answer = {};
+    for (var i = 0; i < paperLen; i++) {
+      answer['remark_' + i] = renderLib.getAnswer(i);
+    }
+    console.log(answer);
+  });
 });
