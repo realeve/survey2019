@@ -114,3 +114,7 @@ input[type="checkbox"i] {
     color: #ee6677;
     display: none;
 }
+
+.remarkTextarea {
+    display: none;
+}

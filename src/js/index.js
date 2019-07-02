@@ -120,7 +120,7 @@ var renderLib = (function() {
       return '';
     }
     return (
-      '<textarea class="form-control" placeholder="选择其他时，请在此填写详情" name="textarea' +
+      '<textarea class="form-control remarkTextarea" placeholder="选择其他时，请在此填写详情" name="textarea' +
       idx +
       '" rows="5"></textarea>'
     );
@@ -207,8 +207,10 @@ var renderLib = (function() {
 
       if (lastAnswer == lastOption) {
         // 如果选了最后一项
+        $('.remarkTextarea').show();
       } else {
         clearTextArea(answerId);
+        $('.remarkTextarea').hide();
       }
       console.log(lastAnswer, lastOption);
     }
