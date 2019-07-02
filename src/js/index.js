@@ -243,7 +243,7 @@ var renderLib = (function () {
     // getTextarea: getTextarea,
     initHtml: initHtml,
     getAnswer: getAnswer,
-    bindEvent: bindEvent
+    bindEvent: bindEvent,
     getParams: getParams
   };
 })();
