@@ -45,6 +45,19 @@ body {
     right: 20px;
 }
 
+.paper {
+    font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei";
+}
+
+.paper h3,
+.paper p,
+.paper h4,
+.paper label,
+.paper span,
+.paper div {
+    font-weight: 100;
+}
+
 .paper h3 {
     text-align: center;
 }
@@ -56,4 +69,22 @@ body {
 
 .item .title {
     font-size: 25px;
+}
+
+.checkbox input {
+    width: 30px;
+    height: 30px;
+}
+
+.checkbox span {
+    margin-left: 15px;
+}
+
+input[type="radio"i],
+input[type="checkbox"i] {
+    background-color: #ffffff;
+    cursor: default;
+    margin: 3px 0.5ex;
+    padding: 10px;
+    border: #ddd 1px solid;
 }
