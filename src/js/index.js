@@ -170,6 +170,11 @@ var renderLib = (function() {
         answer = $('[name="radio' + idx + '"]:checked').val();
         break;
       case 'checkbox':
+        var arr = [];
+        $('[name="checkbox7"]:checked').each(function(idx, item) {
+          arr[idx] = $(item).val();
+        });
+        answer = arr.join('、');
         break;
       case 'textarea':
       default:
@@ -193,13 +198,16 @@ var renderLib = (function() {
     getCheckbox: getCheckbox,
     getRadio: getRadio,
     getTextarea: getTextarea,
-    initHtml: initHtml
+    initHtml: initHtml,
+    getAnswer: getAnswer
   };
 })();
 
 $(function() {
   var url = 'http://api.cbpc.ltd/';
   var ip = '';
+
+  var paperLen = paper.length;
 
   console.log(paper);
   $.get(url + 'ip').then(function(res) {
@@ -209,4 +217,9 @@ $(function() {
 
   var html = renderLib.initHtml();
   $('#paper-wrap').html(html);
+
+  var answer = {};
+  for (var i = 0; i < paperLen; i++) {
+    answer['remark_' + i] = renderLib.getAnswer(i);
+  }
 });
