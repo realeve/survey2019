@@ -15,6 +15,7 @@ body {
 
 .main {
     margin-top: 30px;
+    width: 800px;
 }
 
 .main h3,
@@ -45,9 +46,10 @@ body {
     right: 20px;
 }
 
-.paper {
+
+/* .paper {
     font-family: "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei";
-}
+} */
 
 .paper h3,
 .paper p,
@@ -59,6 +61,7 @@ body {
 }
 
 .paper h3 {
+    margin-top: 30px;
     text-align: center;
 }
 

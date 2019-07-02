@@ -53,9 +53,7 @@ var renderLib = (function() {
       data.title +
       '</h4>\
           <div class="options">\
-              <div class="checkbox" data-idx="' +
-      idx +
-      '">' +
+              <div class="checkbox">' +
       optionHtml +
       '</div>' +
       getExtraTextArea(data, idx) +
@@ -89,9 +87,7 @@ var renderLib = (function() {
       '.' +
       data.title +
       '</h4>\
-          <div class="options" data-idx="' +
-      idx +
-      '">\
+          <div class="options">\
               <div class="radio">' +
       optionHtml +
       '</div>' +
@@ -107,12 +103,9 @@ var renderLib = (function() {
       return '';
     }
     return (
-      '<textarea  data-idx="' +
+      '<textarea class="form-control" placeholder="选择其他时，请在此填写详情" name="textarea' +
       idx +
-      '" class="form-control" placeholder="选择其他时，请在此填写详情" name="textarea' +
-      idx +
-      '" rows="5">\
-           </textarea>'
+      '" rows="5"></textarea>'
     );
   }
 
@@ -126,12 +119,9 @@ var renderLib = (function() {
       data.title +
       '</h4>\
         <div class="options">\
-            <textarea  data-idx="' +
+            <textarea class="form-control" placeholder="点击这里填写答案" name="textarea' +
       idx +
-      '" class="form-control" placeholder="点击这里填写答案" name="textarea' +
-      idx +
-      '" rows="5">\
-            </textarea>\
+      '" rows="5"></textarea>\
         </div>\
     </div>\
 </div>'
@@ -218,8 +208,8 @@ var renderLib = (function() {
 
     for (var i = 0; i < paperLen; i++) {
       var res = renderLib.getAnswer(i);
-      params['remark_' + i] = res.answer;
-      remark['remark_' + i] = res.remark;
+      params['remark_' + (i + 1)] = res.answer;
+      remark['remark_' + (i + 1)] = res.remark;
     }
     return { params: params, remark: remark };
   };
