@@ -1,4 +1,4 @@
-var renderLib = (function () {
+var renderLib = (function() {
   var alphaList = [
     'A',
     'B',
@@ -52,7 +52,9 @@ var renderLib = (function () {
       '.' +
       data.title +
       '</h4>\
-          <div class="options">\
+          <div class="options"  data-idx="' +
+      idx +
+      '"  >\
               <div class="checkbox">' +
       optionHtml +
       '</div>' +
@@ -87,7 +89,9 @@ var renderLib = (function () {
       '.' +
       data.title +
       '</h4>\
-          <div class="options">\
+          <div class="options"  data-idx="' +
+      idx +
+      '"  >\
               <div class="radio">' +
       optionHtml +
       '</div>' +
@@ -148,20 +152,20 @@ var renderLib = (function () {
     return html;
   }
 
-  function validate(el){
+  function validate(el) {
     console.log(el.name);
-    let answerId = el.name.replace(/\D/g,'');
+    let answerId = el.name.replace(/\D/g, '');
     let question = paper[answerId];
     console.log(question);
   }
 
   function bindEvent() {
-    $('[data-idx] input').each(function (i, el) {
-      $(el).change(function (e) { 
+    $('[data-idx] input').each(function(i, el) {
+      $(el).change(function(e) {
         let target = e.target;
-        console.log(target,target.type,target.checked); 
+        console.log(target, target.type, target.checked);
         validate(e.target);
-      })
+      });
     });
   }
 
@@ -186,7 +190,7 @@ var renderLib = (function () {
         break;
       case 'checkbox':
         var arr = [];
-        $('[name="checkbox' + idx + '"]:checked').each(function (i, item) {
+        $('[name="checkbox' + idx + '"]:checked').each(function(i, item) {
           arr[i] = $(item).val();
         });
         answer = arr.join('、');
@@ -242,7 +246,7 @@ var renderLib = (function () {
   };
 })();
 
-$(function () {
+$(function() {
   var url = 'http://api.cbpc.ltd/';
   var ip = '';
 
