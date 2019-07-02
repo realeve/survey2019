@@ -158,18 +158,43 @@ var renderLib = (function () {
     return html;
   }
 
-  function validate(el){
-    console.log(el.name);
-    let answerId = el.name.replace(/\D/g,'');
+  function lockCheckbox(id) {
+    // console.log('lock',id )
+    $('[data-idx=' + id + '] input').each(function (i, el) {
+      if (!el.checked) {
+        $(el).attr('disabled', 'true');
+      }
+    });
+  }
+
+  function unlockCheckbox(id) {
+    // console.log('unlock',id )
+    $('[data-idx=' + id + '] input').each(function (i, el) {
+      $(el).removeAttr("disabled");
+    });
+  }
+
+  function validate(el) {
+    // console.log(el.name);
+    let answerId = el.name ? el.name.replace(/\D/g, '') : parseInt(el);
     let question = paper[answerId];
-    console.log(question);
+    let answers = getAnswer(answerId).answer.split('、');
+    let ans_len = answers?answers.length:0;
+
+    let max = question.length ? question.length : 1;
+    // console.log(question, answers,'.',ans_len,'.',question.length,max);
+    if (ans_len >= max) {
+      lockCheckbox(answerId);
+    } else {
+      unlockCheckbox(answerId);
+    }
   }
 
   function bindEvent() {
     $('[data-idx] input').each(function (i, el) {
-      $(el).change(function (e) { 
+      $(el).change(function (e) {
         let target = e.target;
-        console.log(target,target.type,target.checked); 
+        console.log(target, target.type, target.checked);
         validate(e.target);
       })
     });
@@ -226,7 +251,7 @@ var renderLib = (function () {
     };
   }
 
-  var getParams = function(ip) {
+  var getParams = function (ip) {
     var start_time = dayjs().format('YYYY-MM-DD HH:mm:ss');
     var params = { start_time: start_time, ip: ip },
       remark = { start_time: start_time, ip: ip };
@@ -256,7 +281,7 @@ $(function () {
   var url = 'http://api.cbpc.ltd/';
   var ip = '';
 
-  $.get(url + 'ip').then(function(res) {
+  $.get(url + 'ip').then(function (res) {
     console.log(res);
     ip = res.ip;
   });
@@ -265,7 +290,7 @@ $(function () {
   $('#paper-wrap').html(html);
   renderLib.bindEvent();
 
-  $('#submit').on('click', function() {
+  $('#submit').on('click', function () {
     var data = renderLib.getParams(ip);
     console.log(data);
   });
