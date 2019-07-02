@@ -235,7 +235,7 @@ var renderLib = (function() {
   }
 
   function bindEvent() {
-    $('[data-idx] input').each(function(i, el) {
+    $('input[type="checkbox"]').each(function(i, el) {
       $(el).change(function(e) {
         // var target = e.target;
         // console.log(target, target.type, target.checked);
