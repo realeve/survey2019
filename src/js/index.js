@@ -1,11 +1,42 @@
 var renderLib = (function() {
+  var alphaList = [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z'
+  ];
+
   function getCheckbox(data, idx) {
     var optionHtml = '';
     for (var i = 0; i < data.data.length; i++) {
       var item = data.data[i];
       optionHtml +=
         '<label>\
-      <input type="checkbox" name="checkbox' +
+      <input type="checkbox" value="' +
+        alphaList[i] +
+        '" name="checkbox' +
         idx +
         '">\
       <span>' +
@@ -26,8 +57,9 @@ var renderLib = (function() {
       idx +
       '">' +
       optionHtml +
+      '</div>' +
+      getExtraTextArea(data, idx) +
       '</div>\
-          </div>\
       </div>\
   </div>';
     return html;
@@ -39,7 +71,9 @@ var renderLib = (function() {
       var item = data.data[i];
       optionHtml +=
         '<label>\
-      <input type="radio" name="radio' +
+      <input type="radio"  value="' +
+        alphaList[i] +
+        '" name="radio' +
         idx +
         '">\
       <span>' +
@@ -60,11 +94,26 @@ var renderLib = (function() {
       '">\
               <div class="radio">' +
       optionHtml +
+      '</div>' +
+      getExtraTextArea(data, idx) +
       '</div>\
-          </div>\
       </div>\
   </div>';
     return html;
+  }
+
+  function getExtraTextArea(data, idx) {
+    if (!data.showOther) {
+      return '';
+    }
+    return (
+      '<textarea  data-idx="' +
+      idx +
+      '" class="form-control" placeholder="选择其他时，请在此填写详情" name="textarea' +
+      idx +
+      '" rows="5">\
+           </textarea>'
+    );
   }
 
   function getTextarea(data, idx) {
@@ -107,6 +156,37 @@ var renderLib = (function() {
       // }
     }
     return html;
+  }
+
+  // 获取答案
+  function getAnswer(idx) {
+    var item = paper[idx];
+    var type = item.type || 'radio';
+    var showOther = item.showOther;
+    var answer = '';
+
+    switch (type) {
+      case 'radio':
+        answer = $('[name="radio' + idx + '"]:checked').val();
+        break;
+      case 'checkbox':
+        break;
+      case 'textarea':
+      default:
+        break;
+    }
+
+    var remark = '';
+    if (showOther) {
+      remark = $('[name="textarea' + idx + '"]')
+        .val()
+        .trim();
+    }
+
+    return {
+      answer: answer,
+      remark: remark
+    };
   }
 
   return {
