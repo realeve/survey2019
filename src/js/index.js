@@ -116,10 +116,6 @@ var renderLib = (function () {
     );
   }
 
-  function validate(element) {
-    console.log(element);
-  }
-
   function getTextarea(data, idx) {
     return (
       '<div class="item row">\
@@ -162,11 +158,19 @@ var renderLib = (function () {
     return html;
   }
 
+  function validate(el){
+    console.log(el.name);
+    let answerId = el.name.replace(/\D/g,'');
+    let question = paper[answerId];
+    console.log(question);
+  }
+
   function bindEvent() {
     $('[data-idx] input').each(function (i, el) {
       $(el).change(function (e) { 
         let target = e.target;
         console.log(target,target.type,target.checked); 
+        validate(e.target);
       })
     });
   }
