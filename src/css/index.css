@@ -71,7 +71,8 @@ body {
     font-size: 25px;
 }
 
-.checkbox input {
+.checkbox input,
+.radio input {
     width: 30px;
     height: 30px;
 }
@@ -81,7 +82,8 @@ body {
     display: block;
 }
 
-.checkbox span {
+.checkbox span,
+.radio span {
     margin-left: 15px;
 }
 
