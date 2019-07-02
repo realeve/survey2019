@@ -208,19 +208,43 @@ var renderLib = (function () {
       remark = getTextArea();
     }
 
+    if (typeof answer == 'undefined') {
+      answer = '';
+    }
+
+    if (typeof remark == 'undefined') {
+      remark = '';
+    }
+
     return {
       answer: answer,
       remark: remark
     };
   }
 
+  var getParams = function(ip) {
+    var start_time = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    var params = { start_time: start_time, ip: ip },
+      remark = { start_time: start_time, ip: ip };
+
+    var paperLen = paper.length;
+
+    for (var i = 0; i < paperLen; i++) {
+      var res = renderLib.getAnswer(i);
+      params['remark_' + i] = res.answer;
+      remark['remark_' + i] = res.remark;
+    }
+    return { params: params, remark: remark };
+  };
+
   return {
-    getCheckbox: getCheckbox,
-    getRadio: getRadio,
-    getTextarea: getTextarea,
+    // getCheckbox: getCheckbox,
+    // getRadio: getRadio,
+    // getTextarea: getTextarea,
     initHtml: initHtml,
     getAnswer: getAnswer,
     bindEvent: bindEvent
+    getParams: getParams
   };
 })();
 
@@ -228,10 +252,7 @@ $(function () {
   var url = 'http://api.cbpc.ltd/';
   var ip = '';
 
-  var paperLen = paper.length;
-
-  console.log(paper);
-  $.get(url + 'ip').then(function (res) {
+  $.get(url + 'ip').then(function(res) {
     console.log(res);
     ip = res.ip;
   });
@@ -240,11 +261,8 @@ $(function () {
   $('#paper-wrap').html(html);
   renderLib.bindEvent();
 
-  $('#submit').on('click', function () {
-    var answer = {};
-    for (var i = 0; i < paperLen; i++) {
-      answer['remark_' + i] = renderLib.getAnswer(i);
-    }
-    console.log(answer);
+  $('#submit').on('click', function() {
+    var data = renderLib.getParams(ip);
+    console.log(data);
   });
 });
