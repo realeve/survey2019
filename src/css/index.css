@@ -49,6 +49,11 @@ body {
     text-align: center;
 }
 
-#wrap {
+#paper-wrap {
     padding: 30px 20px 80px 20px;
+    margin-bottom: 100px;
+}
+
+.item .title {
+    font-size: 25px;
 }
