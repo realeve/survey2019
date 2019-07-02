@@ -66,7 +66,7 @@ var renderLib = (function() {
       '.' +
       handleTitle(data.title) +
       '</h4>\
-      <p class="hasErr">答案数量超过最多选择数，系统将不允许提交。</p>\
+      <p class="hasErr">答案数量如果超过最多选择数，系统将不允许提交。</p>\
       <div class="options">\
               <div class="checkbox">' +
       optionHtml +
@@ -165,19 +165,62 @@ var renderLib = (function() {
     return html;
   }
 
-  function validate(answerId) {
-    let question = paper[answerId];
-    var answer = getAnswer(answerId);
-    if (question.length) {
-      var $errDom = $('.item[data-idx=' + answerId + ']').find('.hasErr');
-
-      if (answer.answer.split('、').length > question.length) {
-        console.log('超过');
-        $errDom.show();
-      } else {
-        console.log('正常');
-        $errDom.hide();
+  function lockCheckbox(id) {
+    // console.log('lock',id )
+    $('[data-idx=' + id + '] input').each(function(i, el) {
+      if (!el.checked) {
+        $(el).attr('disabled', 'true');
       }
+    });
+  }
+
+  function unlockCheckbox(id) {
+    // console.log('unlock',id )
+    $('[data-idx=' + id + '] input').each(function(i, el) {
+      $(el).removeAttr('disabled');
+    });
+  }
+
+  // 清除指定题目的textarea
+  function clearTextArea(answerId) {
+    $('.item[data-idx=' + answerId + ']')
+      .find('textarea')
+      .val('');
+  }
+
+  function validate(el) {
+    // console.log(el.name);
+    let answerId = el.name ? el.name.replace(/\D/g, '') : parseInt(el);
+    let question = paper[answerId];
+    let answers = getAnswer(answerId).answer.split('、');
+    let ans_len = answers ? answers.length : 0;
+
+    let max = question.length ? question.length : 1;
+    // console.log(question, answers,'.',ans_len,'.',question.length,max);
+
+    // 判断是否选了最后一项
+    if (max > 1) {
+      // 最后一个答案
+      var lastAnswer = answers[answers.length - 1];
+      // 最后一个选项
+      var lastOption = alphaList[question.data.length - 1];
+
+      if (lastAnswer == lastOption) {
+        // 如果选了最后一项
+      } else {
+        clearTextArea(answerId);
+      }
+      console.log(lastAnswer, lastOption);
+    }
+
+    var $errDom = $('.item[data-idx=' + answerId + ']').find('.hasErr');
+
+    if (ans_len >= max) {
+      $errDom.show();
+      lockCheckbox(answerId);
+    } else {
+      $errDom.hide();
+      unlockCheckbox(answerId);
     }
   }
 
@@ -185,8 +228,8 @@ var renderLib = (function() {
     $('[data-idx] input').each(function(i, el) {
       $(el).change(function(e) {
         let target = e.target;
-        let answerId = target.name.replace(/\D/g, '');
-        validate(answerId);
+        // console.log(target, target.type, target.checked);
+        validate(e.target);
       });
     });
   }
