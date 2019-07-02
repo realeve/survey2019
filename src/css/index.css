@@ -76,6 +76,11 @@ body {
     height: 30px;
 }
 
+.checkbox label,
+.radio label {
+    display: block;
+}
+
 .checkbox span {
     margin-left: 15px;
 }
