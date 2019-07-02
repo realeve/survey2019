@@ -1,4 +1,4 @@
-var renderLib = (function() {
+var renderLib = (function () {
   var alphaList = [
     'A',
     'B',
@@ -148,6 +148,23 @@ var renderLib = (function() {
     return html;
   }
 
+  function validate(el){
+    console.log(el.name);
+    let answerId = el.name.replace(/\D/g,'');
+    let question = paper[answerId];
+    console.log(question);
+  }
+
+  function bindEvent() {
+    $('[data-idx] input').each(function (i, el) {
+      $(el).change(function (e) { 
+        let target = e.target;
+        console.log(target,target.type,target.checked); 
+        validate(e.target);
+      })
+    });
+  }
+
   // 获取答案
   function getAnswer(idx) {
     var item = paper[idx];
@@ -169,7 +186,7 @@ var renderLib = (function() {
         break;
       case 'checkbox':
         var arr = [];
-        $('[name="checkbox' + idx + '"]:checked').each(function(i, item) {
+        $('[name="checkbox' + idx + '"]:checked').each(function (i, item) {
           arr[i] = $(item).val();
         });
         answer = arr.join('、');
@@ -220,11 +237,12 @@ var renderLib = (function() {
     // getTextarea: getTextarea,
     initHtml: initHtml,
     getAnswer: getAnswer,
+    bindEvent: bindEvent,
     getParams: getParams
   };
 })();
 
-$(function() {
+$(function () {
   var url = 'http://api.cbpc.ltd/';
   var ip = '';
 
@@ -235,6 +253,7 @@ $(function() {
 
   var html = renderLib.initHtml();
   $('#paper-wrap').html(html);
+  renderLib.bindEvent();
 
   $('#submit').on('click', function() {
     var data = renderLib.getParams(ip);
