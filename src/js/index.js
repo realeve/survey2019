@@ -188,14 +188,17 @@ var renderLib = (function() {
       .val('');
   }
 
+  function getElIdx(el) {
+    return el.name ? el.name.replace(/\D/g, '') : parseInt(el);
+  }
   function validate(el) {
     // console.log(el.name);
-    let answerId = el.name ? el.name.replace(/\D/g, '') : parseInt(el);
-    let question = paper[answerId];
-    let answers = getAnswer(answerId).answer.split('、');
-    let ans_len = answers ? answers.length : 0;
+    var answerId = getElIdx(el);
+    var question = paper[answerId];
+    var answers = getAnswer(answerId).answer.split('、');
+    var ans_len = answers ? answers.length : 0;
 
-    let max = question.length ? question.length : 1;
+    var max = question.length ? question.length : 1;
     // console.log(question, answers,'.',ans_len,'.',question.length,max);
 
     // 判断是否选了最后一项
@@ -205,14 +208,13 @@ var renderLib = (function() {
       // 最后一个选项
       var lastOption = alphaList[question.data.length - 1];
 
+      $textarea = getTextAreaById(answerId);
       if (lastAnswer == lastOption) {
         // 如果选了最后一项,显示textarea，同时获取焦点
-        $('.remarkTextarea')
-          .show()
-          .focus();
+        $textarea.show().focus();
       } else {
         clearTextArea(answerId);
-        $('.remarkTextarea').hide();
+        $textarea.hide();
       }
       console.log(lastAnswer, lastOption);
     }
@@ -228,13 +230,39 @@ var renderLib = (function() {
     }
   }
 
+  function getTextAreaById(answerId) {
+    return $('.item[data-idx=' + answerId + ']').find('textarea');
+  }
+
   function bindEvent() {
     $('[data-idx] input').each(function(i, el) {
       $(el).change(function(e) {
-        let target = e.target;
+        // var target = e.target;
         // console.log(target, target.type, target.checked);
         validate(e.target);
       });
+    });
+
+    // textarea 失去焦点事件处理
+    $('textarea').on('blur', function(e) {
+      var answerId = getElIdx(e.target);
+      var answer = getAnswer(answerId);
+      console.log(answer);
+
+      var isLastQuestion = answerId == paper.length - 1;
+
+      // 最后一道题目无内容
+      var noContent = answer.answer.trim().length == 0 && isLastQuestion;
+
+      // 备注题目无内容
+      noContent =
+        noContent || (answer.remark.trim().length == 0 && !isLastQuestion);
+
+      // 如果textarea失去焦点时，内容为空，重新获取焦点
+      if (noContent) {
+        $textarea = getTextAreaById(answerId);
+        $textarea.focus();
+      }
     });
   }
 
