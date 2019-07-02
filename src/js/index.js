@@ -206,8 +206,10 @@ var renderLib = (function() {
       var lastOption = alphaList[question.data.length - 1];
 
       if (lastAnswer == lastOption) {
-        // 如果选了最后一项
-        $('.remarkTextarea').show();
+        // 如果选了最后一项,显示textarea，同时获取焦点
+        $('.remarkTextarea')
+          .show()
+          .focus();
       } else {
         clearTextArea(answerId);
         $('.remarkTextarea').hide();
