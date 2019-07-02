@@ -128,7 +128,7 @@ var renderLib = (function() {
         <div class="options">\
             <textarea  data-idx="' +
       idx +
-      '" class="form-control" placeholder="点击这里填写答案" name="textarea+' +
+      '" class="form-control" placeholder="点击这里填写答案" name="textarea' +
       idx +
       '" rows="5">\
             </textarea>\
@@ -165,27 +165,34 @@ var renderLib = (function() {
     var showOther = item.showOther;
     var answer = '';
 
+    function getTextArea() {
+      return $('[name="textarea' + idx + '"]')
+        .val()
+        .trim()
+        .replace(/\r/g, '')
+        .replace(/\n/g, '。');
+    }
+
     switch (type) {
       case 'radio':
         answer = $('[name="radio' + idx + '"]:checked').val();
         break;
       case 'checkbox':
         var arr = [];
-        $('[name="checkbox7"]:checked').each(function(idx, item) {
-          arr[idx] = $(item).val();
+        $('[name="checkbox' + idx + '"]:checked').each(function(i, item) {
+          arr[i] = $(item).val();
         });
         answer = arr.join('、');
         break;
       case 'textarea':
       default:
+        answer = getTextArea();
         break;
     }
 
     var remark = '';
     if (showOther) {
-      remark = $('[name="textarea' + idx + '"]')
-        .val()
-        .trim();
+      remark = getTextArea();
     }
 
     return {
