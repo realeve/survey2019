@@ -28,6 +28,18 @@ var renderLib = (function() {
     'Z'
   ];
 
+  function handleTitle(title) {
+    var res = title.match(/最多选\d项/);
+    if (res == null) {
+      return title;
+    }
+    var replaceStr = res[0];
+    return title.replace(
+      replaceStr,
+      '<span style="color:#ee6677;">' + replaceStr + '</span>'
+    );
+  }
+
   function getCheckbox(data, idx) {
     var optionHtml = '';
     for (var i = 0; i < data.data.length; i++) {
@@ -50,7 +62,7 @@ var renderLib = (function() {
           <h4 class="title">' +
       (idx + 1) +
       '.' +
-      data.title +
+      handleTitle(data.title) +
       '</h4>\
           <div class="options"  data-idx="' +
       idx +
@@ -87,7 +99,7 @@ var renderLib = (function() {
           <h4 class="title">' +
       (idx + 1) +
       '.' +
-      data.title +
+      handleTitle(data.title) +
       '</h4>\
           <div class="options"  data-idx="' +
       idx +
@@ -153,7 +165,6 @@ var renderLib = (function() {
   }
 
   function validate(el) {
-    console.log(el.name);
     let answerId = el.name.replace(/\D/g, '');
     let question = paper[answerId];
     console.log(question);
