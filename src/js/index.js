@@ -195,7 +195,7 @@ var renderLib = (function() {
     // console.log(el.name);
     var answerId = getElIdx(el);
     var question = paper[answerId];
-    var answers = getAnswer(answerId).answer.split('、');
+    var answers = getAnswer(answerId).answer.length?getAnswer(answerId).answer.split('、'):0;
     var ans_len = answers ? answers.length : 0;
 
     var max = question.length ? question.length : 1;
@@ -228,6 +228,9 @@ var renderLib = (function() {
       $errDom.hide();
       unlockCheckbox(answerId);
     }
+
+    // console.log(ans_len,max)
+    return ans_len >= 1 && ans_len <= max;
   }
 
   function getTextAreaById(answerId) {
@@ -339,7 +342,8 @@ var renderLib = (function() {
     initHtml: initHtml,
     getAnswer: getAnswer,
     bindEvent: bindEvent,
-    getParams: getParams
+    getParams: getParams,
+    validate: validate
   };
 })();
 
@@ -358,6 +362,16 @@ $(function() {
 
   $('#submit').on('click', function() {
     var data = renderLib.getParams(ip);
-    console.log(data);
+    let vali = true;
+    for(let i = 0; i < 47; i++){
+      vali = renderLib.validate(i);
+      if(!vali){
+        break;
+      }
+    }
+    console.log(data,vali);
+    if(!vali){
+      window.alert('请按要求完成答题再提交');
+    }
   });
 });
