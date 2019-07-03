@@ -28,7 +28,7 @@ function get(setting, callback) {
 
 get({ url: url + 'ip' }, function (res) {
   ip = res.ip;
-  console.log('ip', ip);
+  // console.log('ip', ip);
 });
 
 function post(setting, callback) {
@@ -41,13 +41,13 @@ function post(setting, callback) {
     var data = setting.data;
     formData += 'id='+data.id + '&' + 'nonce=' + data.nonce;
     var values = data.values[0];
-    console.log(values);
-    formData += 'values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time + '&values[0][ip]='+values.ip + '&values[0][company_id]=1';
+    // console.log(values);
+    formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time + '&values[0][ip]='+values.ip + '&values[0][company_id]=1';
     for (var i = 0; i < 47; i++) {
       var v = values['remark_'+(i+1)];
       formData += '&values[0][remark_'+ (i+1) + ']='+(v?v:'');
     }
-    console.log('formdata', encodeURI(formData));
+    // console.log('formdata', encodeURI(formData));
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function () {
@@ -424,11 +424,11 @@ var renderLib = (function () {
     // console.log('adddata');
     post({ url: url, data: { id: 596, nonce: 'fadd053a8f', values: [data.params] } }, function (res) {
       // console.log(res);
-      alert(1);
+      // alert(1);
     });
     post({ url: url, data: { id: 598, nonce: '8ef0b5d673', values: [data.remark] } }, function (res) {
       // console.log(res);
-      alert(2);
+      // alert(2);
     });
   }
 
@@ -472,7 +472,7 @@ function init() {
       $('#submit').attr('disabled', true);
       alert('答案已提交，请不要重复提交。');
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       alert('报错了，请手动刷新再次填写。如果是多次报错，请联系组办方。');
     }
   });
