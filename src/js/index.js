@@ -1,3 +1,5 @@
+var url = 'http://10.8.1.25:100/';
+
 var renderLib = (function() {
   var alphaList = [
     'A',
@@ -319,8 +321,8 @@ var renderLib = (function() {
 
   var getParams = function(ip) {
     var start_time = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    var params = { start_time: start_time, ip: ip },
-      remark = { start_time: start_time, ip: ip };
+    var params = { start_time: start_time, ip: ip, company_id: 1 },
+      remark = { start_time: start_time, ip: ip, company_id: 1 };
 
     var paperLen = paper.length;
 
@@ -332,6 +334,12 @@ var renderLib = (function() {
     return { params: params, remark: remark };
   };
 
+  function addData(data) {
+    $.get(url + '596/fadd053a8f').then(function(res) {
+      console.log(res);
+    });
+  }
+
   return {
     // getCheckbox: getCheckbox,
     // getRadio: getRadio,
@@ -339,17 +347,17 @@ var renderLib = (function() {
     initHtml: initHtml,
     getAnswer: getAnswer,
     bindEvent: bindEvent,
-    getParams: getParams
+    getParams: getParams,
+    addData: addData
   };
 })();
 
 $(function() {
-  var url = 'http://api.cbpc.ltd/';
   var ip = '';
 
-  $.get(url + 'ip').then(function(res) {
-    console.log(res);
+  $.get(url + '/api/ip').then(function(res) {
     ip = res.ip;
+    console.log(ip);
   });
 
   var html = renderLib.initHtml();
