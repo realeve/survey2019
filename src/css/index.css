@@ -1,6 +1,7 @@
 body {
     font: 22px/1.6 '华文楷体', '楷体', '华文中宋', '仿宋-GB2313', 'Microsoft YaHei', 'Heiti SC', tahoma, arial;
     background-color: #fff;
+    margin: 60px auto;
 }
 
 #app {
@@ -104,11 +105,13 @@ input[type="checkbox"i] {
 
 .action {
     width: 100%;
-    margin-bottom: 100px;
+    text-align: center;
 }
 
 .action .btn {
-    width: 120px;
+    width: 200px;
+    font-size: 24px;
+    font-weight: 600;
 }
 
 .paper .hasErr {
