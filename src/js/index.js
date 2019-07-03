@@ -1,6 +1,69 @@
 var url = 'http://10.8.1.25:100/';
+var DEV = true;
+var isJQ = false;
+var ip = '';
+try {
+  new ActiveXObject("Microsoft.XMLHTTP");
+} catch (e) {
+  isJQ = true;
+}
 
-var renderLib = (function() {
+function get(setting, callback) {
+  if (isJQ) {
+    $.get(setting.url, callback);
+  } else {
+    // alert('!isJQ');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (this.readyState === 4) {
+        callback(JSON.parse(this.responseText));
+      }
+    };
+
+    xhr.open("GET", setting.url);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send();
+  }
+}
+
+get({ url: url + 'ip' }, function (res) {
+  ip = res.ip;
+  console.log('ip', ip);
+});
+
+function post(setting, callback) {
+  if (isJQ) {
+    $.post(setting, callback);
+  } else {
+    // var data = qs.stringify(setting.data);
+
+    var formData = '';
+    var data = setting.data;
+    formData += 'id='+data.id + '&' + 'nonce=' + data.nonce;
+    var values = data.values[0];
+    console.log(values);
+    formData += 'values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time + '&values[0][ip]='+values.ip + '&values[0][company_id]=1';
+    for (var i = 0; i < 47; i++) {
+      var v = values['remark_'+(i+1)];
+      formData += '&values[0][remark_'+ (i+1) + ']='+(v?v:'');
+    }
+    console.log('formdata', encodeURI(formData));
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+      if (this.readyState === 4) {
+        callback(JSON.parse(this.responseText));
+      }
+    };
+
+    xhr.open("POST", setting.url);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.send(encodeURI(formData));
+  }
+}
+
+var renderLib = (function () {
   var alphaList = [
     'A',
     'B',
@@ -48,7 +111,7 @@ var renderLib = (function() {
       var item = data.data[i];
       optionHtml +=
         '<label>\
-      <input type="checkbox" value="' +
+      <input type="checkbox" ' + (DEV && i === 0 ? ' checked ' : '') + 'value="' +
         alphaList[i] +
         '" name="checkbox' +
         idx +
@@ -61,7 +124,7 @@ var renderLib = (function() {
     var html =
       '<div class="item row"  data-idx="' +
       idx +
-      '"  >\
+      '"   id="q-' + idx + '">\
       <div class="col-md-12">\
           <h4 class="title">' +
       (idx + 1) +
@@ -86,7 +149,7 @@ var renderLib = (function() {
       var item = data.data[i];
       optionHtml +=
         '<label>\
-      <input type="radio"  value="' +
+      <input type="radio" ' + (DEV && i === 0 ? ' checked ' : '') + 'value="' +
         alphaList[i] +
         '" name="radio' +
         idx +
@@ -99,7 +162,7 @@ var renderLib = (function() {
     var html =
       '<div class="item row"  data-idx="' +
       idx +
-      '"  >\
+      '"  id="q-' + idx + '">\
       <div class="col-md-12">\
           <h4 class="title">' +
       (idx + 1) +
@@ -130,7 +193,7 @@ var renderLib = (function() {
 
   function getTextarea(data, idx) {
     return (
-      '<div class="item row">\
+      '<div class="item row" id="q-' + idx + '">\
     <div class="col-md-12">\
         <h4 class="title">' +
       (idx + 1) +
@@ -169,18 +232,20 @@ var renderLib = (function() {
 
   function lockCheckbox(id) {
     // console.log('lock',id )
-    $('[data-idx=' + id + '] input').each(function(i, el) {
-      if (!el.checked) {
-        $(el).attr('disabled', 'true');
+    var els = $('[data-idx=' + id + '] input[type="checkbox"]');
+    for (var i = 0; i < els.length; i++) {
+      if (!els[i].checked) {
+        $(els[i]).attr('disabled', 'true');
       }
-    });
+    }
   }
 
   function unlockCheckbox(id) {
     // console.log('unlock',id )
-    $('[data-idx=' + id + '] input').each(function(i, el) {
-      $(el).removeAttr('disabled');
-    });
+    var els = $('[data-idx=' + id + '] input');
+    for (var i = 0; i < els.length; i++) {
+      $(els[i]).removeAttr('disabled');
+    }
   }
 
   // 清除指定题目的textarea
@@ -193,7 +258,7 @@ var renderLib = (function() {
   function getElIdx(el) {
     return el.name ? el.name.replace(/\D/g, '') : parseInt(el);
   }
-  function validate(el) {
+  function validate(el, moveto) {
     // console.log(el.name);
     var answerId = getElIdx(el);
     var question = paper[answerId];
@@ -206,7 +271,7 @@ var renderLib = (function() {
     // console.log(question, answers,'.',ans_len,'.',question.length,max);
 
     // 判断是否选了最后一项
-    if (max > 1) {
+    if (question.showOther) {
       // 最后一个答案
       var lastAnswer = answers[answers.length - 1];
       // 最后一个选项
@@ -215,12 +280,14 @@ var renderLib = (function() {
       $textarea = getTextAreaById(answerId);
       if (lastAnswer == lastOption) {
         // 如果选了最后一项,显示textarea，同时获取焦点
-        $textarea.show().focus();
+        if ($textarea.val().length === 0) {
+          $textarea.show().focus();
+        }
       } else {
         clearTextArea(answerId);
         $textarea.hide();
       }
-      console.log(lastAnswer, lastOption);
+      // console.log(lastAnswer, lastOption);
     }
 
     var $errDom = $('.item[data-idx=' + answerId + ']').find('.hasErr');
@@ -234,7 +301,11 @@ var renderLib = (function() {
     }
 
     // console.log(ans_len,max)
-    return ans_len >= 1 && ans_len <= max;
+    var rs = ans_len >= 1 && ans_len <= max;
+    if (moveto && !rs) {
+      $($('#q-' + el + ' input')[0]).focus();
+    }
+    return rs;
   }
 
   function getTextAreaById(answerId) {
@@ -242,28 +313,29 @@ var renderLib = (function() {
   }
 
   function bindEvent() {
-    $('input[type="checkbox"]').each(function(i, el) {
-      $(el).change(function(e) {
+    var els = $('input[type="checkbox"],input[type="radio"]');
+    for (var i = 0; i < els.length; i++) {
+      $(els[i]).change(function (e) {
         // var target = e.target;
         // console.log(target, target.type, target.checked);
         validate(e.target);
       });
-    });
+    }
 
     // textarea 失去焦点事件处理
-    $('textarea').on('blur', function(e) {
+    $('textarea').on('blur', function (e) {
       var answerId = getElIdx(e.target);
       var answer = getAnswer(answerId);
-      console.log(answer);
+      // console.log(answer);
 
       var isLastQuestion = answerId == paper.length - 1;
 
       // 最后一道题目无内容
-      var noContent = answer.answer.trim().length == 0 && isLastQuestion;
+      var noContent = answer.answer.length == 0 && isLastQuestion;
 
       // 备注题目无内容
       noContent =
-        noContent || (answer.remark.trim().length == 0 && !isLastQuestion);
+        noContent || (answer.remark.length == 0 && !isLastQuestion);
 
       // 如果textarea失去焦点时，内容为空，重新获取焦点
       if (noContent) {
@@ -283,7 +355,6 @@ var renderLib = (function() {
     function getTextArea() {
       return $('[name="textarea' + idx + '"]')
         .val()
-        .trim()
         .replace(/\r/g, '')
         .replace(/\n/g, '。');
     }
@@ -294,9 +365,10 @@ var renderLib = (function() {
         break;
       case 'checkbox':
         var arr = [];
-        $('[name="checkbox' + idx + '"]:checked').each(function(i, item) {
-          arr[i] = $(item).val();
-        });
+        var els = $('[name="checkbox' + idx + '"]:checked');
+        for (var i = 0; i < els.length; i++) {
+          arr[i] = $(els[i]).val();
+        }
         answer = arr.join('、');
         break;
       case 'textarea':
@@ -324,10 +396,19 @@ var renderLib = (function() {
     };
   }
 
-  var getParams = function(ip) {
+  function getUUID() {
+    var uuid = '';
+    for (var i = 0; i < 16; i++) {
+      uuid += alphaList[parseInt(Math.random() * alphaList.length)];
+    }
+    return uuid;
+  }
+
+  var getParams = function () {
     var start_time = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    var params = { start_time: start_time, ip: ip, company_id: 1 },
-      remark = { start_time: start_time, ip: ip, company_id: 1 };
+    var uuid = getUUID();
+    var params = { uuid: uuid, start_time: start_time, ip: ip, company_id: 1 },
+      remark = { uuid: uuid, start_time: start_time, ip: ip, company_id: 1 };
 
     var paperLen = paper.length;
 
@@ -340,8 +421,14 @@ var renderLib = (function() {
   };
 
   function addData(data) {
-    $.get(url + '596/fadd053a8f').then(function(res) {
-      console.log(res);
+    // console.log('adddata');
+    post({ url: url, data: { id: 596, nonce: 'fadd053a8f', values: [data.params] } }, function (res) {
+      // console.log(res);
+      alert(1);
+    });
+    post({ url: url, data: { id: 598, nonce: '8ef0b5d673', values: [data.remark] } }, function (res) {
+      // console.log(res);
+      alert(2);
     });
   }
 
@@ -353,34 +440,40 @@ var renderLib = (function() {
     getAnswer: getAnswer,
     bindEvent: bindEvent,
     getParams: getParams,
-    validate: validate
+    validate: validate,
+    addData: addData
   };
 })();
 
-$(function() {
-  var ip = '';
 
-  $.get(url + '/api/ip').then(function(res) {
-    ip = res.ip;
-    console.log(ip);
-  });
+function init() {
 
   var html = renderLib.initHtml();
   $('#paper-wrap').html(html);
   renderLib.bindEvent();
 
-  $('#submit').on('click', function() {
+  $('#submit').on('click', function () {
     var data = renderLib.getParams(ip);
-    let vali = true;
-    for (let i = 0; i < 47; i++) {
-      vali = renderLib.validate(i);
+    var vali = true;
+    for (var i = 0; i < 47; i++) {
+      vali = renderLib.validate(i, true);
       if (!vali) {
         break;
       }
     }
-    console.log(data, vali);
+    // console.log(data, vali);
     if (!vali) {
       window.alert('请按要求完成答题再提交');
+      return false;
+    }
+
+    try {
+      renderLib.addData(data);
+      $('#submit').attr('disabled', true);
+      alert('答案已提交，请不要重复提交。');
+    } catch (e) {
+      console.log(e);
+      alert('报错了，请手动刷新再次填写。如果是多次报错，请联系组办方。');
     }
   });
-});
+};
