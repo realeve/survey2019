@@ -1,5 +1,6 @@
 var url = 'http://10.8.1.25:100/';
-var DEV = true;
+var DEV = false;
+var ISOK = false;
 var isJQ = false;
 var ip = '';
 try {
@@ -16,7 +17,7 @@ function get(setting, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
-        callback(JSON.parse(this.responseText));
+        callback($.parseJSON(this.responseText));
       }
     };
 
@@ -26,11 +27,6 @@ function get(setting, callback) {
   }
 }
 
-get({ url: url + 'ip' }, function (res) {
-  ip = res.ip;
-  // console.log('ip', ip);
-});
-
 function post(setting, callback) {
   if (isJQ) {
     $.post(setting, callback);
@@ -39,20 +35,20 @@ function post(setting, callback) {
 
     var formData = '';
     var data = setting.data;
-    formData += 'id='+data.id + '&' + 'nonce=' + data.nonce;
+    formData += 'id=' + data.id + '&' + 'nonce=' + data.nonce;
     var values = data.values[0];
     // console.log(values);
-    formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time + '&values[0][ip]='+values.ip + '&values[0][company_id]=1';
+    formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time + '&values[0][ip]=' + values.ip + '&values[0][company_id]=1';
     for (var i = 0; i < 47; i++) {
-      var v = values['remark_'+(i+1)];
-      formData += '&values[0][remark_'+ (i+1) + ']='+(v?v:'');
+      var v = values['remark_' + (i + 1)];
+      formData += '&values[0][remark_' + (i + 1) + ']=' + (v ? v : '');
     }
     // console.log('formdata', encodeURI(formData));
     var xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function () {
       if (this.readyState === 4) {
-        callback(JSON.parse(this.responseText));
+        callback($.parseJSON(this.responseText));
       }
     };
 
@@ -448,32 +444,49 @@ var renderLib = (function () {
 
 function init() {
 
-  var html = renderLib.initHtml();
-  $('#paper-wrap').html(html);
-  renderLib.bindEvent();
+  get({ url: url + 'ip' }, function (res) {
+    ip = res.ip;
+    ISOK = dayjs(res.serverTime).isAfter('2019-07-04 13:50:00') && dayjs(res.serverTime).isBefore('2019-07-05 16:00:00');
 
-  $('#submit').on('click', function () {
-    var data = renderLib.getParams(ip);
-    var vali = true;
-    for (var i = 0; i < 47; i++) {
-      vali = renderLib.validate(i, true);
-      if (!vali) {
-        break;
-      }
-    }
-    // console.log(data, vali);
-    if (!vali) {
-      window.alert('请按要求完成答题再提交');
-      return false;
-    }
-
-    try {
-      renderLib.addData(data);
+    if (!ISOK) {
       $('#submit').attr('disabled', true);
-      alert('答案已提交，请不要重复提交。');
-    } catch (e) {
-      // console.log(e);
-      alert('报错了，请手动刷新再次填写。如果是多次报错，请联系组办方。');
+      $('#mask').show();
+      // alert('问卷通道关闭');
+
+      $('#paper-wrap').html('<div style="color:red;font-size:30pt;text-align:center;">问卷通道关闭</div>');
+    } else {
+
+      var html = renderLib.initHtml();
+      $('#paper-wrap').html(html);
+      renderLib.bindEvent();
+
+
+      $('#submit').on('click', function () {
+        var data = renderLib.getParams(ip);
+        var vali = true;
+        for (var i = 0; i < 46; i++) {
+          vali = renderLib.validate(i, true);
+          if (!vali) {
+            break;
+          }
+        }
+        // console.log(data, vali);
+        if (!vali) {
+          window.alert('请按要求完成答题再提交');
+          return false;
+        }
+
+        try {
+          renderLib.addData(data);
+          $('#submit').attr('disabled', true);
+          alert('答案已提交，请关闭页面。');
+        } catch (e) {
+          // console.log(e);
+          alert('报错了，请手动刷新再次填写。如果是多次报错，请联系组办方。');
+        }
+      });
     }
   });
+
+
 };
