@@ -166,3 +166,7 @@ input[type="checkbox"i] {
 textarea.form-control{
     font-size: 20px;
 }
+
+.unqualified {
+    background-color: #eeaabb;
+}

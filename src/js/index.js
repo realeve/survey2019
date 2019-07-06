@@ -1,6 +1,7 @@
 var url = 'http://10.8.1.25:100/';
 var DEV = false;
 var ISOK = false;
+var PWD_VALIDATED = false;
 var isJQ = false;
 var ip = '';
 try {
@@ -10,6 +11,9 @@ try {
 }
 
 function get(setting, callback) {
+  if(DEV){
+    callback({ip:'127.0.0.1',serverTime:'0000-00-00 00:00:00'});
+  }
   if (isJQ) {
     $.get(setting.url, callback);
   } else {
@@ -38,7 +42,8 @@ function post(setting, callback) {
     formData += 'id=' + data.id + '&' + 'nonce=' + data.nonce;
     var values = data.values[0];
     // console.log(values);
-    formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time + '&values[0][ip]=' + values.ip + '&values[0][company_id]=1';
+    formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time 
+                + '&values[0][ip]=' + values.ip + '&values[0][company_id]=1&values[0][batch]='+values.company;
     for (var i = 0; i < 47; i++) {
       var v = values['remark_' + (i + 1)];
       formData += '&values[0][remark_' + (i + 1) + ']=' + (v ? v : '');
@@ -401,10 +406,16 @@ var renderLib = (function () {
   }
 
   var getParams = function () {
+    var company = $('#company').val();
+    if(company == '0'){
+      $('#company').focus();
+      alert('请选择单位');
+      return false;
+    }
     var start_time = dayjs().format('YYYY-MM-DD HH:mm:ss');
     var uuid = getUUID();
-    var params = { uuid: uuid, start_time: start_time, ip: ip, company_id: 1 },
-      remark = { uuid: uuid, start_time: start_time, ip: ip, company_id: 1 };
+    var params = { uuid: uuid, start_time: start_time, ip: PWD_VALIDATED?company:ip, company_id: 1,batch:company },
+      remark = { uuid: uuid, start_time: start_time, ip: PWD_VALIDATED?company:ip, company_id: 1 };
 
     var paperLen = paper.length;
 
@@ -441,16 +452,32 @@ var renderLib = (function () {
   };
 })();
 
+function vld_pwd(evt){
+  var vld = false;
+  try{
+    vld = atob(evt.value) == "¥«,ÃJÝ";
+  }catch(e){}
+  if(vld){
+    PWD_VALIDATED = true;
+    $('#mask').hide();
+    // DEV = true;
+    init();
+    $('#submit').removeAttr('disabled');
+  }else{
+    evt.value = '';
+    $(evt).focus();
+  }
+}
 
 function init() {
-
   get({ url: url + 'ip' }, function (res) {
     ip = res.ip;
-    ISOK = dayjs(res.serverTime).isAfter('2019-07-04 13:50:00') && dayjs(res.serverTime).isBefore('2019-07-05 16:00:00');
+    ISOK = PWD_VALIDATED || DEV || dayjs(res.serverTime).isAfter('2019-07-04 13:50:00') && dayjs(res.serverTime).isBefore('2019-07-05 16:00:00');
 
     if (!ISOK) {
       $('#submit').attr('disabled', true);
       $('#mask').show();
+      $('#pwd').focus();
       // alert('问卷通道关闭');
 
       $('#paper-wrap').html('<div style="color:red;font-size:30pt;text-align:center;">问卷通道关闭</div>');
@@ -460,9 +487,12 @@ function init() {
       $('#paper-wrap').html(html);
       renderLib.bindEvent();
 
-
+      $('#submit').unbind('click');
       $('#submit').on('click', function () {
         var data = renderLib.getParams(ip);
+        if(!data){
+          return;
+        }
         var vali = true;
         for (var i = 0; i < 46; i++) {
           vali = renderLib.validate(i, true);

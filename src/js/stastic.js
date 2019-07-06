@@ -46,7 +46,11 @@ const render = ({total,group}) => {
     $('#stastic-total').text(total);
     let html = '';
     group.forEach( e => {
-        html += `<div class="col-md-12"><span class="col-ip">${e['IP地址']}：</span><span class="num">${e.total}</span></div>`;
+        let qualified = 0;
+        try{
+            qualified = eval(e.total)>=0.9;
+        }catch(e){}
+        html += `<div class="col-md-12"><span class="col-ip">${e['IP地址']}：</span><span class="num${qualified?'':' unqualified'}">${e.total}</span></div>`;
     });
     $('#groupTotal').html('');
     $('#app > div:nth-child(2)').fadeIn('slow',function(){

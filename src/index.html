@@ -47,7 +47,6 @@
             <p style="text-indent: 0;">成并提交。</p>
             <p>&nbsp;</p>
             <div class="sign">
-              
               <p>&nbsp;</p>
               <p>
                 中国印钞造币总公司调研组
@@ -61,6 +60,33 @@
         <div class="row">
           <div class="col-md-12">
             <h3>问卷内容</h3>
+            <div id="company-div">
+              <select id="company">
+                <option value="0">--选择单位--</option>
+                <option value='10.64.0.0'>保定钞纸</option>
+                <option value='10.16.0.0'>北京印钞</option>
+                <option value='10.8.0.0'>成都印钞</option>
+                <option value='10.116.0.0'>广州印钞</option>
+                <option value='10.56.0.0'>昆山钞纸</option>
+                <option value='10.48.0.0'>南昌印钞</option>
+                <option value='10.72.0.0'>南京造币</option>
+                <option value='10.24.0.0'>上海印钞</option>
+                <option value='10.80.0.0'>上海造币</option>
+                <option value='10.88.0.0'>沈阳造币</option>
+                <option value='10.40.0.0'>石家庄印钞</option>
+                <option value='10.32.0.0'>西安印钞</option>
+                <option value='10.136.0.0'>中钞长城</option>
+                <option value='10.192.0.0'>中钞防伪</option>
+                <option value='10.104.0.0'>中钞光华</option>
+                <option value='10.152.0.0'>中钞国鼎</option>
+                <option value='10.96.0.0'>中钞华森</option>
+                <option value='10.120.0.0'>中钞实业</option>
+                <option value='10.128.0.0'>中钞信用卡</option>
+                <option value='10.176.0.0'>中钞研究院</option>
+                <option value='10.144.0.0'>中钞油墨</option>
+                <option value='10.0.0.0'>总公司本部</option>                
+              </select>
+            </div>
             <div id="paper-wrap"></div>
             <div class="action">
               <button id="submit" class="btn btn-primary">提交</button>
@@ -69,7 +95,9 @@
         </div>
       </div>
     </div>
-    <div id="mask">问卷通道关闭</div>
+    <div id="mask">问卷通道关闭
+      <div class="pwd"><input type="password" id="pwd" placeholder="输入密码" onchange="vld_pwd(this)" style="height:48px;width:250px;color:darkgray"></input></div>
+    </div>
     <script src="./js/paper.js"></script>
     <script src="./js/jquery.min.js"></script>
     <script src="./js/dayjs.min.js"></script>
