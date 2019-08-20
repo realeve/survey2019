@@ -1,5 +1,5 @@
 var url = 'http://10.8.1.25:100/';
-var DEV = false;
+var DEV = true;
 var ISOK = false;
 var PWD_VALIDATED = false;
 var isJQ = false;
@@ -466,6 +466,13 @@ function vld_pwd(evt){
   }else{
     evt.value = '';
     $(evt).focus();
+  }
+}
+
+function input_pwd(evt){
+  var pwd = evt.value;
+  if(pwd.length == 8){
+    vld_pwd(evt);
   }
 }
 
