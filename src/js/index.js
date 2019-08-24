@@ -271,9 +271,10 @@ var renderLib = (function () {
     var answerId = getElIdx(el);
     var question = paper[answerId];
     var answers = getAnswer(answerId).answer.length
-      ? getAnswer(answerId).answer.split('、')
+      ? question.type=='textarea'?getAnswer(answerId).answer:getAnswer(answerId).answer.split('、')
       : 0;
-    var ans_len = answers ? answers.length : 0;
+      
+    var ans_len = answers ?  answers.length : 0;
 
     var max = question.length ? question.length : 1;
     // console.log(question, answers,'.',ans_len,'.',question.length,max);
@@ -308,8 +309,7 @@ var renderLib = (function () {
       unlockCheckbox(answerId);
     }
 
-    // console.log(ans_len,max)
-    var rs = ans_len >= 1 && ans_len <= max;
+    var rs = question.type == 'textarea'? ans_len > 0 : (ans_len >= 1 && ans_len <= max);
     if (moveto && !rs) {
       $($('#q-' + el + ' input')[0]).focus();
     }
