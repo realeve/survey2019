@@ -29,7 +29,7 @@
               <ol>
                 <li><strong>调研范围：</strong>总公司所属二级企业主管科技工作的高层管理人员，科技管理人员，具有高级工程师及以上专业技术职务任职资格的专业技术人员，以及参与过或正在参与行业级及以上科技项目的科研试验操作人员。</li>
                 <li>本问卷匿名填写，请被调研人员客观公正地发表自己的见解。</li>
-                <li>问卷回收最后时间是2019年8月30日下午16:00，请务必在此日期前完成并由本公司科技管理部门统一提交。</li>
+                <li>问卷回收最后时间是2019年8月30日下午16:00，请务必在此日期前完成并提交。</li>
               </ol>
             </p>
             <p>
@@ -40,6 +40,7 @@
               </ul>
             </p>
             <p style="text-align:right;">科技管理部<br>2019年8月20日</p>
+			<p style="text-indent: 0px; margin-top: 3em;font-weight: 600;">浏览器兼容性提示：此调查问卷可兼容 Chrome，Firefox，QQ浏览器等非IE浏览器，IE 8.0及以上版本。经测试不能兼容到IE7及以下版本。</p>
           </div>
         </div>
       </div>
@@ -47,6 +48,7 @@
         <div class="row">
           <div class="col-md-12">
             <h3>问卷内容</h3>
+			<!--
             <div id="company-div">
               <select id="company">
                 <option value="0">--选择单位--</option>
@@ -74,6 +76,7 @@
                 <option value='10.0.0.0'>总公司本部</option>                
               </select>
             </div>
+			-->
             <div id="paper-wrap"></div>
             <div class="action">
               <button id="submit" class="btn btn-primary">提交</button>
@@ -82,12 +85,12 @@
         </div>
       </div>
     </div>
-    <div id="mask">问卷通道关闭
+    <div id="mask">问卷开放时间：2019-08-22 13:50
       <div class="pwd"><input type="password" id="pwd" placeholder="输入密码" oninput="input_pwd(this)" onchange="vld_pwd(this)" style="height:48px;width:250px;color:darkgray"></input></div>
     </div>
-    <script src="./js/paper.js"></script>
+    <script src="./js/paper.js?v=1.2"></script>
     <script src="./js/jquery.min.js"></script>
     <script src="./js/dayjs.min.js"></script>
-    <script src="./js/index.js?v=1.3"></script>
+    <script src="./js/index.js?v=2.2"></script>
   </body>
 </html>
