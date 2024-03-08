@@ -469,6 +469,13 @@ function vld_pwd(evt){
   }
 }
 
+function input_pwd(evt){
+  var pwd = evt.value;
+  if(pwd.length == 8){
+    vld_pwd(evt);
+  }
+}
+
 function init() {
   get({ url: url + 'ip' }, function (res) {
     ip = res.ip;
