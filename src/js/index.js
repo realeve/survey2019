@@ -1,6 +1,6 @@
 var url = 'http://10.8.1.25:100/';
 var DEV = false;
-var ISOK = false;
+var ISOK = true;
 var PWD_VALIDATED = false;
 var isJQ = false;
 var ip = '';
@@ -33,6 +33,13 @@ function get(setting, callback) {
 
 function post(setting, callback) {
   if (isJQ) {
+	  var data = setting.data;
+	  if(!data.values[0].batch){
+		  var value = data.values[0];
+		  value.batch = '';
+		  data.values[0]=value;
+	  }
+	  setting.data = data;
     $.post(setting, callback);
   } else {
     // var data = qs.stringify(setting.data);
@@ -42,9 +49,9 @@ function post(setting, callback) {
     formData += 'id=' + data.id + '&' + 'nonce=' + data.nonce;
     var values = data.values[0];
     // console.log(values);
-    formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time 
-                + '&values[0][ip]=' + values.ip + '&values[0][company_id]=1&values[0][batch]='+values.company;
-    for (var i = 0; i < 47; i++) {
+	formData += '&values[0][uuid]=' + values.uuid + '&values[0][start_time]=' + values.start_time 
+                + '&values[0][ip]=' + values.ip + '&values[0][company_id]=1&values[0][batch]='+(values.company||'');
+    for (var i = 0; i < 30; i++) {
       var v = values['remark_' + (i + 1)];
       formData += '&values[0][remark_' + (i + 1) + ']=' + (v ? v : '');
     }
@@ -204,7 +211,7 @@ var renderLib = (function () {
         <div class="options">\
             <textarea class="form-control" placeholder="点击这里填写答案" name="textarea' +
       idx +
-      '" rows="5"></textarea>\
+      '" rows="5">'+ (DEV?'测试用内容':'') +'</textarea>\
         </div>\
     </div>\
 </div>'
@@ -260,13 +267,14 @@ var renderLib = (function () {
     return el.name ? el.name.replace(/\D/g, '') : parseInt(el);
   }
   function validate(el, moveto) {
-    // console.log(el.name);
+    //console.log(el);
     var answerId = getElIdx(el);
     var question = paper[answerId];
     var answers = getAnswer(answerId).answer.length
-      ? getAnswer(answerId).answer.split('、')
+      ? question.type=='textarea'?getAnswer(answerId).answer:getAnswer(answerId).answer.split('、')
       : 0;
-    var ans_len = answers ? answers.length : 0;
+      
+    var ans_len = answers ?  answers.length : 0;
 
     var max = question.length ? question.length : 1;
     // console.log(question, answers,'.',ans_len,'.',question.length,max);
@@ -301,8 +309,7 @@ var renderLib = (function () {
       unlockCheckbox(answerId);
     }
 
-    // console.log(ans_len,max)
-    var rs = ans_len >= 1 && ans_len <= max;
+    var rs = question.type == 'textarea'? ans_len > 0 : (ans_len >= 1 && ans_len <= max);
     if (moveto && !rs) {
       $($('#q-' + el + ' input')[0]).focus();
     }
@@ -349,6 +356,10 @@ var renderLib = (function () {
   // 获取答案
   function getAnswer(idx) {
     var item = paper[idx];
+    if(!item){
+      return;
+    }
+    //console.log(idx,item)
     var type = item.type || 'radio';
     var showOther = item.showOther;
     var answer = '';
@@ -479,7 +490,7 @@ function input_pwd(evt){
 function init() {
   get({ url: url + 'ip' }, function (res) {
     ip = res.ip;
-    ISOK = PWD_VALIDATED || DEV || dayjs(res.serverTime).isAfter('2019-07-04 13:50:00') && dayjs(res.serverTime).isBefore('2019-07-05 16:00:00');
+    ISOK = PWD_VALIDATED || DEV || dayjs(res.serverTime).isAfter('2019-08-22 13:50:00') && dayjs(res.serverTime).isBefore('2019-08-30 18:00:00');
 
     if (!ISOK) {
       $('#submit').attr('disabled', true);
@@ -501,7 +512,7 @@ function init() {
           return;
         }
         var vali = true;
-        for (var i = 0; i < 46; i++) {
+        for (var i = 0; i < 30; i++) {
           vali = renderLib.validate(i, true);
           if (!vali) {
             break;
